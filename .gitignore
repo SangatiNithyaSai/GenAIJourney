@@ -1,0 +1,11 @@
+**/lib/
+**/bin/
+**/include/
+**/etc/
+**/share/
+**/pyvenv.cfg
+**/lib64
+**/lib64/
+lib64/
+##IGNORING LOGS
+**/logs/

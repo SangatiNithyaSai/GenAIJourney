@@ -1,0 +1,9 @@
+tensorflow==2.13.1
+pandas
+numpy
+scikit-learn
+ipykernel
+scikeras
+streamlit
+matplotlib
+nltk
