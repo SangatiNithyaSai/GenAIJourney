@@ -9,3 +9,4 @@
 lib64/
 ##IGNORING LOGS
 **/logs/
+.env
