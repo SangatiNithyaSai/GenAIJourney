@@ -10,3 +10,6 @@ arxiv
 pymupdf
 wikipedia
 langchain-openai
+langchain-ollama
+langchain-huggingface
+sentence-transformers
