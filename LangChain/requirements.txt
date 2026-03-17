@@ -1,6 +1,7 @@
 ipykernel
 numpy
 pandas
+langchain
 langchain-community
 python-dotenv
 langchain-groq
@@ -14,4 +15,6 @@ langchain-ollama
 langchain-huggingface
 sentence-transformers
 faiss-cpu
-langchain-chroma
+langchain_chroma
+pysqlite3-binary
+chromadb
