@@ -19,3 +19,7 @@ langchain_chroma
 pysqlite3-binary
 chromadb
 streamlit
+fastapi
+langserve
+uvicorn
+requests
