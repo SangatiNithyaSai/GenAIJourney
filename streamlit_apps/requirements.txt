@@ -1,3 +1,6 @@
 tensorflow
 pandas
 streamlit
+langchain-groq
+python-dotenv
+langchain-core
