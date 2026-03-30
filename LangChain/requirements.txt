@@ -25,3 +25,4 @@ uvicorn
 requests
 langchain-google_genai
 pydantic
+langchain-classic
