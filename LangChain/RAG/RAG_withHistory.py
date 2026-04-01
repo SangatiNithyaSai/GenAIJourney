@@ -24,7 +24,7 @@ from langchain_chroma.vectorstores import Chroma
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_classic.chains import create_history_aware_retriever,create_retrieval_chain
-
+from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 #Prompts
 from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
@@ -41,7 +41,7 @@ api_key=st.text_input("Enter your Groq API key:",type='password')
 
 #check if api key is provided or not
 if api_key:
-    llm=ChatGroq(model_name="Gemma2-9b-It",api_key=api_key)
+    llm=ChatGroq(model_name="openai/gpt-oss-20b",api_key=api_key)
     #chat interface
     session_id=st.text_input("Session ID",value="default_session")
     #statefully manage chat history
@@ -82,8 +82,52 @@ if api_key:
             ]
         )
         history_aware_retriever=create_history_aware_retriever(llm,retriever,contextualize_que_prompt)
-
+        #history aware retriever uses LLM to contextualise the question with history and get the related chunks
+        #Question Answer Chain to get the previously generated context and use the input
+        #question Answer LLM
         
+        system_prompt=(
+            "You are an assistant for question-answering tasks. "
+                "Use the following pieces of retrieved context to answer "
+                "the question. If you don't know the answer, say that you "
+                "don't know. Use three sentences maximum and keep the "
+                "answer concise."
+                "\n\n"
+                "{context}"
+        )
+        qa_prompt=ChatPromptTemplate.from_messages(
+            [
+            ("system",system_prompt),
+            MessagesPlaceholder("chat_history"),
+            ("human","{input}")]
+        )
+        # to create a chain that waits for data from retreiver
+        question_answer_chain=create_stuff_documents_chain(llm,qa_prompt)
+        rag_chain=create_retrieval_chain(history_aware_retriever,question_answer_chain)
 
+        #function to retrieve the ChatHistory
+        def get_session_history(session_id:str)->BaseChatMessageHistory:
+            if session_id not in st.session_state.store:
+                st.session_state.store[session_id]=ChatMessageHistory()
+            return st.session_state.store[session_id]
+        conversational_rag_chain=RunnableWithMessageHistory(
+            rag_chain,get_session_history,
+            input_messages_key="input",
+            history_messages_key="chat_history",
+            output_messages_key="answer"
+        )
+
+        user_input= st.text_input("Your Question:")
+        if user_input:
+            session_history=get_session_history(session_id)
+            response=conversational_rag_chain.invoke(
+                {"input":user_input},
+                config={
+                    "configurable":{"session_id":session_id}
+                }
+            )
+            st.write(st.session_state.store)
+            st.write("Assistant:",response['answer'])
+            st.write("Chat History:",session_history.messages)
 else:
     st.warning("Provide the API Key")
