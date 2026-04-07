@@ -2,12 +2,13 @@ import streamlit as st
 from pathlib import Path
 from langchain_community.utilities import SQLDatabase
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
-
+from langchain_community.callbacks import StreamlitCallbackHandler
 #from langchain.agents import create_agent
-from langgraph.prebuilt import create_react_agent
+from langchain.agents import create_agent
 from sqlalchemy import create_engine
 import sqlite3
 from langchain_groq import ChatGroq
+from streamlit.runtime.scriptrunner import get_script_run_ctx
 st.set_page_config(page_title="Langchain:Chat with SQL DB",page_icon="🦜")
 st.title("🦜Langchain :Chat with SQL")
 
@@ -59,6 +60,8 @@ else:
 
 ##toolkit
 toolkit=SQLDatabaseToolkit(db=db,llm=llm)
+
+
 system_prompt = """
 You are an agent designed to interact with a SQL database.
 Given an input question, create a syntactically correct {dialect} query to run,
@@ -85,16 +88,41 @@ Then you should query the schema of the most relevant tables.
     top_k=5,
 )
 
+
 tools=toolkit.get_tools()
-agent=create_react_agent(
-    model=llm,tools=tools,prompt=system_prompt
+agent=create_agent(
+    model=llm,tools=tools,system_prompt=system_prompt
 )
 """
 agent=create_agent(
     model=llm,tools=toolkit,system_prompt=system_prompt
 )
 """
+# To check the working of the agent uncomment below
+'''
 question="give me names of the students"
 print(agent.invoke({
     "messages":[{'role':'user','content':question}]
 }))
+'''
+
+if "messages" not in st.session_state or st.sidebar.button("Clear messages"):
+    st.session_state["messages"]=[{"role":"assistant","content":"How Can I help you?"}]
+
+for message in st.session_state.messages:
+    st.chat_message(message['role']).write(message['content'])
+user_query=st.chat_input(placeholder="Ask any question from the Database")
+
+if user_query:
+    st.session_state.messages.append({'role':'user','content':user_query})
+    st.chat_message('user').write(user_query)
+    ctx = get_script_run_ctx()
+    with st.chat_message('assistant'):
+        streamlit_callback=StreamlitCallbackHandler(st.container())
+        streamlit_callback.run_context=ctx
+        response=agent.invoke({ "role":"user","content":user_query},
+                              config={"callbacks":[streamlit_callback]})
+        st.session_state.messages.append({'role':'assistant','content':response["messages"][-1].content})
+        st.write(response["messages"][-1].content)
+    print(st.session_state.messages)
+    
