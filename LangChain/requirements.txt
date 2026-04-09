@@ -29,3 +29,4 @@ langchain-classic
 langchainhub
 langsmith
 duckduckgo-search
+numexpr
