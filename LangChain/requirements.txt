@@ -30,3 +30,4 @@ langchainhub
 langsmith
 duckduckgo-search
 numexpr
+huggingface-hub
