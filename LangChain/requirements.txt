@@ -31,3 +31,7 @@ langsmith
 duckduckgo-search
 numexpr
 huggingface-hub
+validators==0.28.1
+youtube-transcript-api
+pytube
+unstructured
