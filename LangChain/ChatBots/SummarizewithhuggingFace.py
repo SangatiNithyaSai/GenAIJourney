@@ -18,7 +18,7 @@ with st.sidebar:
 generic_url=st.text_input("URL",label_visibility="collapsed")
 
 repo_id="meta-llama/Meta-Llama-3-8B"
-llm=HuggingFaceEndpoint(repo_id=repo_id,temperature=0.8,huggingfacehub_api_token=hf_api_key)
+llm=HuggingFaceEndpoint(repo_id=repo_id,temperature=0.8,huggingfacehub_api_token=hf_api_key,task="text-generation")
 
 prompt_template=""" 
 Provide a summary of the following content in 300 words
@@ -50,7 +50,7 @@ if st.button("Summarize content from YT or website"):
                 st.success(output_summary)                                 
 
         except Exception as e:
-            st.exception(f"Exception:{e}")
+            st.exception(f"Error is :{e}")
             
 
 
