@@ -39,3 +39,4 @@ unstructured
 cassio
 datasets
 tiktoken
+gradio
