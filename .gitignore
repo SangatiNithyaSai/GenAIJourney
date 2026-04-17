@@ -11,3 +11,4 @@ lib64/
 **/logs/
 .env
 **__pycache__/
+.venv
