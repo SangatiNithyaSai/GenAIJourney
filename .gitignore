@@ -12,3 +12,4 @@ lib64/
 .env
 **__pycache__/
 .venv
+**/llamaindex-docs/

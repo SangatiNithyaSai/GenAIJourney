@@ -28,5 +28,5 @@ index=VectorStoreIndex.from_documents(documents=documents)
 
 #query
 engine=index.as_query_engine()
-response=engine.query("What is Pinecone")
+response=engine.query("What is an Agent")
 print(response)

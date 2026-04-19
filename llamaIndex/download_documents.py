@@ -30,7 +30,7 @@ from crawl4ai import (
 )
 
 #configuration
-BASE_URL="https://developers.llamaindex.ai/python/framework/"
+BASE_URL="https://www.promptingguide.ai/"
 OUTPUT_DIR=Path("./llamaindex-docs")
 MAX_DEPTH=5
 
@@ -46,7 +46,7 @@ async def crawl_llamaindex_docs():
     #filtering the urls
     url_filter=FilterChain(filters=[
         URLPatternFilter(
-            patterns=["*developers.llamaindex.ai/python/*"],
+            patterns=["*www.promptingguide.ai/*"],
             use_glob=True,
             reverse=False
         )
@@ -109,7 +109,7 @@ async def crawl_llamaindex_docs():
 
                     #save the file
                     filepath=OUTPUT_DIR / filename
-                    filepath.write_text(content,encoding="uft-8")
+                    filepath.write_text(content,encoding="utf-8")
                     print(f"[{i+1:3d}] Saved: {filename} ({len(content):,} chars)")
                     saved_count+=1
                 else:
