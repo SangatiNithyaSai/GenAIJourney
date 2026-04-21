@@ -39,7 +39,7 @@ for i,node in enumerate(nodes[:3]):
     print(f"Node {i+1} Content : {node.get_content}")
 
     if node.metadata:
-        print(f"-source: {node.metadata.get("file_name","N/A")}")
+        print(f"-source: {node.metadata.get('file_name','N/A')}")
         
 
 print("Creating Vector store from Nodes")
@@ -48,5 +48,5 @@ print('vector store is created')
 
 #query
 engine=index.as_query_engine()
-response=engine.query("What is Pinecone")
+response=engine.query("What can Agents do?")
 print(response)
