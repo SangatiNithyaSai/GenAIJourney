@@ -40,3 +40,4 @@ cassio
 datasets
 tiktoken
 gradio
+boto3
