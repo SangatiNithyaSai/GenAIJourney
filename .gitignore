@@ -13,3 +13,4 @@ lib64/
 **__pycache__/
 .venv
 **/llamaindex-docs/
+uv.lock

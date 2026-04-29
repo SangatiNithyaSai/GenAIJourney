@@ -8,7 +8,7 @@ bedrock=boto3.client(service_name="bedrock-runtime",region_name='us-east-1')
 
 payload={
     "prompt":prompt_data,
-    "maxTokens":512,
+    "maxTokens":120,
     "temperature":0.8,
     "topP":0.8
 }
