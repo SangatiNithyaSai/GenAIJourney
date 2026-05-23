@@ -6,7 +6,10 @@ from typing import Optional,Literal
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph,START,END
 from google import genai
+
+from langchain_groq import ChatGroq
 client=genai.Client()
+llm=ChatGroq(model="openai/gpt-oss-120b")
 
 class State(TypedDict):
     user_query:str

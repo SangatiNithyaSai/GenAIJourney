@@ -9,6 +9,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "google>=3.0.0",
     "google-genai>=2.4.0",
+    "grandalf>=0.8",
     "ipykernel>=7.2.0",
     "langchain-groq>=1.1.2",
     "langgraph>=1.2.1",
