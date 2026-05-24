@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 load_dotenv()
 from rich import print
 from typing import Optional,Literal
+import json
+import re
 
 from typing_extensions import TypedDict
 from langgraph.graph import StateGraph,START,END
@@ -10,7 +12,7 @@ from google import genai
 from langchain_groq import ChatGroq
 client=genai.Client()
 llm_chatgpt=ChatGroq(model="openai/gpt-oss-120b")
-llm_evaluator=ChatGroq(model="qwen/qwen3-32b")
+llm_evaluator=ChatGroq(model="qwen/qwen3-32b",)
 
 class State(TypedDict):
     user_query:str
@@ -59,6 +61,7 @@ def evaluation_response(state:State):
     # 'reason:''
     # }}. 
     # """
+    
     evaluation_prompt = f"""
     You are an expert evaluator.
 
@@ -78,15 +81,30 @@ Do not include markdown.
 Do not include <think> tags.
     Return ONLY valid JSON in this format:
    
-    {{
+    
+    """
+    messages=[
+        ("system","""You are an Judge for asssessing the responses from two different models. 
+         Assess them and rank them after that provide the output in json format as below        
+         {
         "gemini_score": 0,
         "gpt_score": 0,
         "winner": "",
         "reason": ""
-    }}
-    """
-    response=llm_evaluator.invoke(evaluation_prompt)
-    state["best_output"]=response.content
+    }"""),
+    ("user",evaluation_prompt)
+    ]
+    response=llm_evaluator.invoke(messages)
+    json_match = re.search(r"\{.*\}", response.content, re.DOTALL)
+    
+    if not json_match:
+        raise ValueError("No JSON block found in the provided text.")
+        
+    json_string = json_match.group(0)
+    
+    # Safely parse the isolated string into a Python dictionary
+    final_response=json.loads(json_string)
+    state["best_output"]=final_response
     return state
 
 
