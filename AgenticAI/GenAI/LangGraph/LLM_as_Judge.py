@@ -123,7 +123,8 @@ graph_builder.add_edge("LLM_As_Judge",END)
 graph=graph_builder.compile()
 
 print(graph.get_graph().draw_ascii())
-updated_state=graph.invoke(State(user_query="Answer the question in 50 words.What is Context manager in FastAPI?"))
+user_query=input("Ask the question\n >")
+updated_state=graph.invoke(State(user_query=user_query))
 print(updated_state)
 
 

@@ -3,16 +3,17 @@ load_dotenv()
 import os
 import json
 from mem0 import Memory
-from openai import OpenAI
+
+from google.genai.types import GenerateContentConfig
 
 # 1. Retrieve the correct API key
 api_key = os.getenv('GOOGLE_API_KEY')
+from google import genai
+
+client=genai.Client(api_key=os.getenv('GOOGLE_API_KEY'))
+
 
 # Initialize the OpenAI compatibility client for Gemini
-client = OpenAI(
-    api_key=api_key,
-    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
-)
 
 config = {
     "version": "v1.1",
@@ -20,14 +21,16 @@ config = {
         "provider": "gemini",
         "config": {
             "api_key": api_key,
-            "model": "text-embedding-004"  # Google's standard embedding model
+            "model": "gemini-embedding-001" , # Google's standard embedding model
+            "output_dimensionality": 1536
         }
-    },
+    }
+    ,
     "llm": {
         "provider": "gemini",
         "config": {
             "api_key": api_key,
-            "model": "gemini-1.5-flash"   # Or "gemini-1.5-pro" depending on your preference
+            "model": "gemini-2.5-flash"   # Or "gemini-1.5-pro" depending on your preference
         }
     },
     "graph_store": {
@@ -50,11 +53,11 @@ config = {
 mem_client = Memory.from_config(config)
 
 while True:
-    user_query = input("> ")
+    user_query = input(">Enter the question \n type exit or quit to stop the conversation : ")
     if user_query.lower() in ['exit', 'quit']:
         break
 
-    search_memory = mem_client.search(query=user_query, user_id="nithyasai")
+    search_memory = mem_client.search(query=user_query, filters={"user_id":"nithyasai"})
     
     # Safely handle extraction based on Mem0 memory object schemas
     memories = [
@@ -70,16 +73,18 @@ while True:
     
     # FIXED: Corrected the typo "comtent" to "content"
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_query}
+        {"role": "user", "parts": [{"text":user_query}]}
     ]
     
-    response = client.chat.completions.create(
-        model="gemini-1.5-flash",
-        messages=messages
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=messages,
+        config=GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT
+        )
     )
     
-    ai_response = response.choices[0].message.content
+    ai_response = response.text
     print("Ai:", ai_response)
     mem_client.add(
         user_id="nithyasai",
