@@ -43,11 +43,15 @@ history.append({"role":"user","parts": [{"text": user_query}]})
 while True:
     if user_query.lower() == "exit":
         break
-    response=client.models.generate_content(model="gemini-2.5-flash",contents=user_query,
+    response=client.models.generate_content(model="gemini-3.5-flash",contents=user_query,
                                             config=GenerateContentConfig(system_instruction=SYSTEM_PROMPT))
     history.append({"role":"model","parts": [{"text": response.text}]})
-    print(response.text)
-    parsed_result_list=json.loads(response.text)
+    #print(response.text)
+    parsed_result_list = [
+        json.loads(line)
+        for line in response.text.strip().splitlines()
+        if line.strip()
+    ]
     for parsed_result in parsed_result_list:
         if parsed_result.get("step")=="START":
             print("😊",parsed_result.get("content"))
@@ -62,3 +66,5 @@ while True:
             break
 
     
+    user_query=input("Ask your question- ")
+    history.append({"role":"user","parts": [{"text": user_query}]})
