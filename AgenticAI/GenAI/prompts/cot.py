@@ -43,7 +43,7 @@ history.append({"role":"user","parts": [{"text": user_query}]})
 while True:
     if user_query.lower() == "exit":
         break
-    response=client.models.generate_content(model="gemini-3.5-flash",contents=user_query,
+    response=client.models.generate_content(model="gemini-2.5-flash",contents=user_query,
                                             config=GenerateContentConfig(system_instruction=SYSTEM_PROMPT))
     history.append({"role":"model","parts": [{"text": response.text}]})
     #print(response.text)
