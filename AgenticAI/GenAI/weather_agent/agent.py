@@ -92,32 +92,36 @@ history.append({"role":"user","parts": [{"text": user_query}]})
 while True:
     if user_query.lower() == "exit":
         break
-    response=client.models.generate_content(model="gemini-3.5-flash",contents=user_query,
-                                            config=GenerateContentConfig(system_instruction=SYSTEM_PROMPT,response_mime_type="application/json",response_schema=MyOutputFormat))
-    history.append({"role":"model","parts": [{"text": response.text}]})
-    print(response.text)
-    parsed_result_list = [
-        json.loads(line)
-        for line in response.text.strip().splitlines()
-        if line.strip()
-    ]
-    for parsed_result in parsed_result_list:
-        if parsed_result.get("step")=="START":
-            print("😊",parsed_result.get("content"))
-            continue
-        if parsed_result.get("step")=="TOOL":
-            tool_to_call=parsed_result.get("tool")
-            tool_input=parsed_result.get("input")
-            print("Tool-",parsed_result.get("content"))
-            continue
-        if parsed_result.get("step")=="PLAN":
-            print("🚀",parsed_result.get("content"))
-            continue
+    while True:
+        response=client.models.generate_content(model="gemini-3.5-flash",contents=history,
+                                                config=GenerateContentConfig(system_instruction=SYSTEM_PROMPT,response_mime_type="application/json",response_schema=MyOutputFormat))
+        history.append({"role":"model","parts": [{"text": response.text}]})
+        print(response.text)
+        parsed_result_list = [
+            json.loads(line)
+            for line in response.text.strip().splitlines()
+            if line.strip()
+        ]
+        output_received=False
+        for parsed_result in parsed_result_list:
+            if parsed_result.get("step")=="START":
+                print("😊",parsed_result.get("content"))
+                continue
+            if parsed_result.get("step")=="TOOL":
+                tool_to_call=parsed_result.get("tool")
+                tool_input=parsed_result.get("input")
+                print("Tool-",parsed_result.get("content"))
+                continue
+            if parsed_result.get("step")=="PLAN":
+                print("🚀",parsed_result.get("content"))
+                continue
 
-        if parsed_result.get("step")=="OUTPUT":
-            print("🤖",parsed_result.get("content"))
+            if parsed_result.get("step")=="OUTPUT":
+                print("🤖",parsed_result.get("content"))
+                output_received=True
+                break
+        if output_received:
             break
-
     
     user_query=input("Ask your question- ")
     history.append({"role":"user","parts": [{"text": user_query}]})
