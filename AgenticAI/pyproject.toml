@@ -13,6 +13,7 @@ dependencies = [
     "grandalf>=0.8",
     "ipykernel>=7.2.0",
     "langchain-groq>=1.1.2",
+    "langchain-qdrant>=1.1.0",
     "langgraph>=1.2.1",
     "langgraph-checkpoint-mongodb>=0.4.0",
     "mem0ai>=2.0.4",
